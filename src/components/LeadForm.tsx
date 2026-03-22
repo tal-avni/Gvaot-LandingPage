@@ -39,21 +39,18 @@ export default function LeadForm() {
     setErrorMsg('');
 
     try {
-      const res = await fetch(APPS_SCRIPT_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name,
-          email,
-          phone,
-          owner: owner === 'yes' ? 'כן' : 'לא',
-          rooms,
-        }),
+      const params = new URLSearchParams({
+        name,
+        email,
+        phone,
+        owner: owner === 'yes' ? 'כן' : 'לא',
+        rooms: rooms ?? '',
+      });
+      await fetch(`${APPS_SCRIPT_URL}?${params.toString()}`, {
+        method: 'GET',
         mode: 'no-cors',
       });
 
-      // no-cors returns opaque response – treat reaching here as success
-      void res;
       setFormState('success');
     } catch {
       setErrorMsg('שגיאה בשליחה, אנא נסו שוב.');
