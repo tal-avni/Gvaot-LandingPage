@@ -19,12 +19,21 @@ export default function LeadForm() {
   const [rooms, setRooms] = useState<string | null>(null);
   const [formState, setFormState] = useState<FormState>('idle');
   const [errorMsg, setErrorMsg] = useState('');
+  const [honeypot, setHoneypot] = useState('');
 
-  const isValid = name && email && phone && owner !== null && rooms !== null;
+  const PHONE_RE = /^0[5-9]\d{8}$/;
+  const isPhoneValid = PHONE_RE.test(phone.replace(/[-\s]/g, ''));
+  const isValid = name && email && phone && isPhoneValid && owner !== null && rooms !== null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isValid) return;
+
+    // Bot trap: real users never fill the hidden field
+    if (honeypot) {
+      setFormState('success');
+      return;
+    }
 
     setFormState('loading');
     setErrorMsg('');
@@ -110,6 +119,7 @@ export default function LeadForm() {
               onChange={e => setName(e.target.value)}
               placeholder="ישראל ישראלי"
               required
+              maxLength={100}
               className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#c9a84c] focus:ring-2 focus:ring-[#c9a84c]/20 transition-all duration-200 text-base"
             />
           </div>
@@ -125,6 +135,7 @@ export default function LeadForm() {
               onChange={e => setEmail(e.target.value)}
               placeholder="example@mail.com"
               required
+              maxLength={254}
               className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#c9a84c] focus:ring-2 focus:ring-[#c9a84c]/20 transition-all duration-200 text-base"
               dir="ltr"
             />
@@ -141,9 +152,13 @@ export default function LeadForm() {
               onChange={e => setPhone(e.target.value)}
               placeholder="05X-XXX-XXXX"
               required
+              maxLength={15}
               className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#c9a84c] focus:ring-2 focus:ring-[#c9a84c]/20 transition-all duration-200 text-base"
               dir="ltr"
             />
+            {phone && !isPhoneValid && (
+              <p className="text-red-500 text-xs mt-1.5">יש להזין מספר טלפון ישראלי תקין (לדוגמה: 0521234567)</p>
+            )}
           </div>
 
           {/* Owner toggle */}
@@ -190,6 +205,18 @@ export default function LeadForm() {
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* Honeypot — hidden from real users, filled only by bots */}
+          <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px', opacity: 0, pointerEvents: 'none', tabIndex: -1 } as React.CSSProperties}>
+            <input
+              type="text"
+              name="website"
+              value={honeypot}
+              onChange={e => setHoneypot(e.target.value)}
+              autoComplete="off"
+              tabIndex={-1}
+            />
           </div>
 
           {/* Error message */}
