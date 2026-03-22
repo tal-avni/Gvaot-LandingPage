@@ -1,0 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-assistant: 'Assistant', sans-serif;
+  --color-gold: #c9a84c;
+  --color-gold-light: #e0c16e;
+  --color-charcoal: #1a1a2e;
+  --color-charcoal-light: #16213e;
+}
+
+* {
+  font-family: 'Assistant', sans-serif;
+}
+
+body {
+  direction: rtl;
+  background-color: #f8f7f4;
+}
+
+html {
+  scroll-behavior: smooth;
+}
